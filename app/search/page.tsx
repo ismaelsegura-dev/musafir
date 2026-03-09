@@ -1,9 +1,10 @@
 import { PropertyCard } from "@/components/property-card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { properties } from "@/data/mock-listings";
 import { SlidersHorizontal } from "lucide-react";
 import { SearchFilters } from "@/components/search-filters";
+import { supabase } from "@/lib/supabase";
+import { Property } from "@/data/mock-listings";
 
 interface SearchPageProps {
     searchParams: { [key: string]: string | string[] | undefined };
@@ -16,6 +17,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
     const resolvedParams = await searchParams; // Next 15+ convention
     const location = typeof resolvedParams.location === 'string' ? resolvedParams.location : undefined;
+
+    const { data: propertiesData } = await supabase.from('properties').select('*');
+    const properties: Property[] = propertiesData || [];
 
     // Simple filter
     const filteredProperties = location

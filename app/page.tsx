@@ -3,13 +3,23 @@
 import { HeroSearch } from "@/components/hero-search";
 import { PropertyCard } from "@/components/property-card";
 import { TextReveal } from "@/components/text-reveal";
-import { properties } from "@/data/mock-listings";
+import { Property } from "@/data/mock-listings";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function Home() {
-  const featuredProperties = properties.slice(0, 3);
+  const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      const { data } = await supabase.from('properties').select('*').limit(3);
+      if (data) setFeaturedProperties(data);
+    };
+    fetchProperties();
+  }, []);
 
   return (
     <div className="flex flex-col gap-10 pb-10">

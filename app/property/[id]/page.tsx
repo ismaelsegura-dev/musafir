@@ -1,5 +1,6 @@
-import { properties } from "@/data/mock-listings";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/lib/supabase";
+import { Property } from "@/data/mock-listings";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Star, MapPin, ShieldCheck, Check } from "lucide-react";
@@ -13,9 +14,17 @@ interface PropertyPageProps {
 
 export default async function PropertyPage({ params }: PropertyPageProps) {
     const resolvedParams = await params;
-    const property = properties.find((p) => p.id === resolvedParams.id);
 
-    if (!property) {
+    // Fetch property from Supabase
+    const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('id', resolvedParams.id)
+        .single();
+
+    const property = data as Property | null;
+
+    if (!property || error) {
         notFound();
     }
 
